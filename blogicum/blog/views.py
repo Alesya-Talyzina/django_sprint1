@@ -46,7 +46,7 @@ posts = [
 ]
 
 
-POSTS_DICT = {post_sep['id']: post_sep for post_sep in posts}
+POSTS_DICT = {post_ren['id']: post_ren for post_ren in posts}
 
 
 def index(request):
