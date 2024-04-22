@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from django.http import Http404
 
-# Create your views here.
+
 posts = [
     {
         'id': 0,
@@ -45,19 +46,29 @@ posts = [
 ]
 
 
+POSTS_DICT = {post_sep['id']: post_sep for post_sep in posts}
+
+
 def index(request):
     template = 'blog/index.html'
     context = {'posts': reversed(posts)}
     return render(request, template, context)
 
 
-def post_detail(request, id):
-    template = 'blog/detail.html'
-    context = {'post': posts[id]}
-    return render(request, template, context)
+def post_detail(request, post_id):
+    """Вывод отдельной страницы публикации из словаря posts."""
+    if post_id in POSTS_DICT:
+        template = 'blog/detail.html'
+        context = {'post': POSTS_DICT[post_id]}
+        return render(request, template, context)
+    return render(request, '404.html', status=404)
 
 
 def category_posts(request, category_slug):
     template = 'blog/category.html'
-    context = {'category_slug': category_slug, 'posts': posts}
+    context = {'category_slug': category_slug}
     return render(request, template, context)
+
+
+def handler404(request, exception):
+    return render(request, '404.html', status=404)
