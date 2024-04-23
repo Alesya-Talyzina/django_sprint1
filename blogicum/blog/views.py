@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import Http404
 
 
 posts = [
@@ -45,7 +46,7 @@ posts = [
 ]
 
 
-POSTS_DICT = {post_ren['id']: post_ren for post_ren in posts}
+POSTS_DICT = {post['id']: post for post in posts}
 
 
 def index(request):
@@ -55,19 +56,12 @@ def index(request):
 
 
 def post_detail(request, post_id):
-    """Вывод отдельной страницы публикации из словаря posts."""
-    if post_id in POSTS_DICT:
-        template = 'blog/detail.html'
-        context = {'post': POSTS_DICT[post_id]}
-        return render(request, template, context)
-    return render(request, '404.html', status=404)
+    if post_id not in POSTS_DICT:
+        raise Http404('Страница, которую вы ищете, не найдена!')
+    return render(request, 'blog/detail.html', {'post': POSTS_DICT[post_id]})
 
 
 def category_posts(request, category_slug):
     template = 'blog/category.html'
     context = {'category_slug': category_slug}
     return render(request, template, context)
-
-
-def handler404(request, exception):
-    return render(request, '404.html', status=404)
